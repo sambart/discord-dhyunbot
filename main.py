@@ -3,6 +3,7 @@ import os
 from discord import app_commands
 from discord.ext import commands
 import re
+import dotenv
 
 #설치파일 확인
 try:
@@ -18,7 +19,9 @@ except ImportError:
         exit()
 
 MY_GUILD = discord.Object(id=996054821100593273)
-TOKEN = 'MTAzOTA3NTE2MjUzODExOTE3OA.GkFLg4.IBrE6teVJtonT4vxp4KHdOQBDdP5eMD16wyR4c'
+dotenv_file = dotenv.find_dotenv()
+
+TOKEN = dotenv.load_dotenv(dotenv_file)
 
 intents = discord.Intents.default()
 intents.members = True
@@ -45,7 +48,7 @@ async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
     if payload.channel_id != channel.id:
         return
     if payload.emoji.name == "✅":  
-        if (member.nick in " ㄱ") == False:  
+        if " ㄱ" not in member.nick:  
             newNick = member.nick + " ㄱ"
             await member.edit(nick = newNick)
         #if role in member.roles:
