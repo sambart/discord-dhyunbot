@@ -4,6 +4,8 @@ from discord import app_commands
 from discord.ext import commands
 import re
 import dotenv
+from datetime import datetime
+import datetime
 
 #설치파일 확인
 try:
@@ -20,8 +22,8 @@ except ImportError:
 
 MY_GUILD = discord.Object(id=996054821100593273)
 dotenv_file = dotenv.find_dotenv()
-
-TOKEN = dotenv.load_dotenv(dotenv_file)
+dotenv.load_dotenv(dotenv_file)
+TOKEN = os.environ["TOKEN"]
 
 intents = discord.Intents.default()
 intents.members = True
@@ -82,7 +84,8 @@ async def on_raw_reaction_remove(payload: discord.RawReactionActionEvent):
          #   await member.remove_roles(role) #removes the role if user already has
 
 
-@bot.command(name='테스트1')
+#관전용 이모지
+@bot.command(name='관전이모지')
 @commands.has_permissions(administrator=True) #permissions
 async def say(ctx):
     channel = bot.get_channel(1140192448056922152)
@@ -91,7 +94,22 @@ async def say(ctx):
     await Moji.add_reaction('✅')
     #await channel.connect()
     
-    
+#뉴비 멤버 변경
+@bot.command(name='뉴비')
+@commands.has_permissions(administrator=True) #permissions
+async def say(ctx):
+    i =0
+    for guild in bot.guilds:
+        for member in guild.members:
+            i +=1
+            print({member})
+            now = datetime.datetime.now() + datetime.timedelta(days=30)
+            print({})
+            print({member.joined_at})
+            print({member.joined_at.strftime("%b %d, %Y, %T")})
+            print({member.name}, {member.nick})
+            data = f"{i};{member.name};{member.nick}"
+
 @bot.command(name='온앤오프닉정규화')  # 명령어 이름, 설명
 @commands.has_permissions(administrator=True) #permissions
 async def say(ctx):
@@ -99,13 +117,25 @@ async def say(ctx):
 
 
     p = re.compile('[abc]')
-    
+    i =0
+    f = open("./onf_list.txt", 'w', encoding='utf-8')
     for guild in bot.guilds:
         for member in guild.members:
-            print({member})
+            i +=1
+            print({i})
+            print({member.name}, {member.nick})
+            data = f"{i};{member.name};{member.nick}"
+            #data = i, " - ", member.name, " ", member.nick
+            print(data)
+            f.write(data)
+            f.write("\n")
 
             #strMemeber += member.nick
             embed.add_field(name='닉', value=member.nick, inline=True)
+
+    f.close()
+
+
     await ctx.send(embed=embed)
 
     
