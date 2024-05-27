@@ -9,7 +9,9 @@ RUN apt-get update -y && \
     apt-get install -y software-properties-common && \
     add-apt-repository ppa:deadsnakes/ppa -y && \
     apt-get install -y python3.9 sqlite3
+    apt-get install python3-pip
 
+RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 # Set the working directory to /db
 WORKDIR /db
