@@ -79,7 +79,8 @@ class LogThread:
             self.members.append(ChannelMember(user))
         self.get_member(user).joined = datetime.datetime.now()
         
-        description = f'**{user.nick}**님이 **{self.voice_channel.name}** 채널에 들어왔습니다'
+        nick = user.nick.strip('#') if user.nick is not None else None
+        description = f'**{nick}**님이 **{self.voice_channel.name}** 채널에 들어왔습니다'
         embed = discord.Embed(title="방입장", description=description, color=Colours.soft_green)
         await self.thread.send(embed=embed)
             
@@ -94,7 +95,8 @@ class LogThread:
         
         #self.members.remove(self.get_member(user))
 
-        description = f'**{user.nick}**님이 **{self.voice_channel.name}** 채널에서 나갔습니다\n**{user.nick}**님이 **{total_hours}**시간동안 채널에 머물렀습니다'
+        nick = user.nick.strip('#') if user.nick is not None else None
+        description = f'**{nick}**님이 **{self.voice_channel.name}** 채널에서 나갔습니다\n**{nick}**님이 **{total_hours}**시간동안 채널에 머물렀습니다'
         embed = discord.Embed(title="방퇴장", description=description, color=Colours.soft_red)
         await self.thread.send(embed=embed)
         #await self.send(f'{user.display_name}님이 {self.voice_channel.name} 채널에서 나갔습니다!')
