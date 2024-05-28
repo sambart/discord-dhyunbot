@@ -9,18 +9,19 @@ from pytz import timezone
 
 CATEGORY_BLACKLIST = [1139375856989511742]
 CHANNEL_BLACKLIST = ['✔ㅣ채널생성']
-KST = timezone('Asial/Seoul')
+KST = timezone('Asia/Seoul')
+
 
 class ChannelMember:
     def __init__(self, user: discord.user):
         self.user:discord.Member = user
-        self.joined:datetime = datetime.now().astimezone(KST)
+        self.joined:datetime = datetime.now(KST)
         self.outed:datetime = None
         self.last_message = None
         self.period = timedelta()
         self.state = 'in'
     
-    def cal_period(self) -> datetime.timedelta:
+    def cal_period(self) -> timedelta:
         self.outed = datetime.now().astimezone(KST)
         self.period += self.outed - self.joined
         return self.period
@@ -40,7 +41,7 @@ class LogThread:
     def __init__(self, thread: discord.Thread, voice_channel:discord.VoiceChannel):
         self.thread: discord.Thread = thread
         self.members: List[ChannelMember] = []
-        self.joined = datetime.now().astimezone(KST)
+        self.joined = datetime.now(KST)
         self.voice_channel:discord.VoiceChannel = voice_channel
         self.last_message = None
         self.create_member = None
@@ -66,10 +67,10 @@ class LogThread:
             return None
         if(voice_channel.name in CHANNEL_BLACKLIST):
             return None
-        sThread = (await noti_channel.create_thread(name=f"{voice_channel.name}", content=f'방생성 {member.nick} [{datetime.datetime.now()}]')).thread
+        sThread = (await noti_channel.create_thread(name=f"{voice_channel.name}", content=f'방생성 {member.nick} [{datetime.now(KST)}]')).thread
         lThread = LogThread(sThread, voice_channel)
         await lThread.enter_member(member)
-        lThread.joined = datetime.now().astimezone(KST)
+        lThread.joined = datetime.now(KST)
         lThread.create_member = member
         return lThread
 
@@ -79,7 +80,7 @@ class LogThread:
     async def enter_member(self, user: discord.Member):
         if self.get_member(user) is None:            
             self.members.append(ChannelMember(user))
-        self.get_member(user).joined = datetime.now().astimezone(KST)
+        self.get_member(user).joined = datetime.now(KST)
         
         nick = user.nick.strip('#') if user.nick is not None else None
         description = f'**{nick}**님이 **{self.voice_channel.name}** 채널에 들어왔습니다'
@@ -111,7 +112,7 @@ class LogThread:
         return None    
     
     async def delete(self):
-        self.outed = datetime.datetime.now()
+        self.outed = datetime.now(KST)
         description = f'**{self.voice_channel.name}** 채널이 삭제되었습니다'
         embed = discord.Embed(title="방삭제", description=description, color=Colours.yellow)
         await self.thread.send(embed=embed)
