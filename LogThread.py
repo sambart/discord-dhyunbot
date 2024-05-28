@@ -3,20 +3,25 @@ from typing import List
 import discord
 from discord import app_commands
 from discord.ext import commands
-import datetime
+from datetime import datetime, timedelta
 from constants import Colours
+from pytz import timezone
+
+CATEGORY_BLACKLIST = [1139375856989511742]
+CHANNEL_BLACKLIST = ['✔ㅣ채널생성']
+KST = timezone('Asial/Seoul')
 
 class ChannelMember:
     def __init__(self, user: discord.user):
         self.user:discord.Member = user
-        self.joined:datetime = datetime.datetime.now()
+        self.joined:datetime = datetime.now().astimezone(KST)
         self.outed:datetime = None
         self.last_message = None
-        self.period = datetime.timedelta()
+        self.period = timedelta()
         self.state = 'in'
     
     def cal_period(self) -> datetime.timedelta:
-        self.outed = datetime.datetime.now()
+        self.outed = datetime.now().astimezone(KST)
         self.period += self.outed - self.joined
         return self.period
 
@@ -28,17 +33,14 @@ class ChannelMember:
         return f"{self.user.name}"
     
     def __eq__(self, other):
-        return self.user == other.user
+        return self.user == other.user   
     
-    
-CATEGORY_BLACKLIST = [1139375856989511742]
-CHANNEL_BLACKLIST = ['✔ㅣ채널생성']
-   
+
 class LogThread: 
     def __init__(self, thread: discord.Thread, voice_channel:discord.VoiceChannel):
         self.thread: discord.Thread = thread
         self.members: List[ChannelMember] = []
-        self.joined = datetime.datetime.now()
+        self.joined = datetime.now().astimezone(KST)
         self.voice_channel:discord.VoiceChannel = voice_channel
         self.last_message = None
         self.create_member = None
@@ -67,7 +69,7 @@ class LogThread:
         sThread = (await noti_channel.create_thread(name=f"{voice_channel.name}", content=f'방생성 {member.nick} [{datetime.datetime.now()}]')).thread
         lThread = LogThread(sThread, voice_channel)
         await lThread.enter_member(member)
-        lThread.joined = datetime.datetime.now()
+        lThread.joined = datetime.now().astimezone(KST)
         lThread.create_member = member
         return lThread
 
@@ -77,7 +79,7 @@ class LogThread:
     async def enter_member(self, user: discord.Member):
         if self.get_member(user) is None:            
             self.members.append(ChannelMember(user))
-        self.get_member(user).joined = datetime.datetime.now()
+        self.get_member(user).joined = datetime.now().astimezone(KST)
         
         nick = user.nick.strip('#') if user.nick is not None else None
         description = f'**{nick}**님이 **{self.voice_channel.name}** 채널에 들어왔습니다'
