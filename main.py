@@ -134,6 +134,7 @@ async def on_guild_channel_delete(channel):
 #해당 채널에서 리엑션을 했을시 관전자 롤 부여
 @bot.event
 async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
+    bot.add_listener(on)
     print(payload)
     channel = bot.get_channel(1140192448056922152)
     role = discord.utils.get(payload.member.guild.roles, name="관전자")

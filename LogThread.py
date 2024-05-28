@@ -116,12 +116,13 @@ class LogThread:
         #await self.send(f'{self.voice_channel.name} 채널이 삭제되었습니다!')
         period = self.outed - self.joined
         total_hours = round(period.days * 24 + period.seconds / 3600, 2) #소수점 이하 2자리까지 반올림        
-        edit_message = f'방이름: {self.voice_channel.name}\n생성자: {self.create_member.nick}\n방생성시간: {self.joined.strftime(self.DATETIME_FORMAT)}\n방삭제시간: {self.outed.strftime(self.DATETIME_FORMAT)}\n방생존시간: {total_hours} \n\n### 방에 머문 멤버 목록\n'
+        edit_message = f'방이름: {self.voice_channel.name}\n생성자: {self.create_member.nick}\n방생성시각: {self.joined.strftime(self.DATETIME_FORMAT)}\n방삭제시각: {self.outed.strftime(self.DATETIME_FORMAT)}\n방생존시간: {total_hours}시간 \n\n### 방에 머문 멤버 목록\n'
         
         for member in self.members:
             period = member.period
             total_hours = round(period.days * 24 + period.seconds / 3600, 2) #소수점 이하 2자리까지 반올림
-            edit_message += f'{member.user.nick}: {total_hours}시간\n'
+            nick = member.user.nick.strip('#') if member.user.nick is not None else None
+            edit_message += f'{nick}: {total_hours}시간\n'
         
         embed = discord.Embed(title="방생성정보", description=edit_message, color=Colours.white)
         await self.thread.send(embed = embed)
