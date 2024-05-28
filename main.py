@@ -5,7 +5,6 @@ from discord.ext import commands
 import re
 import dotenv
 from datetime import datetime
-import datetime
 import copy
 from LogThread import LogThread
 from typing import Dict
@@ -33,7 +32,8 @@ intents.members = True
 intents.message_content = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-threadDict = {}
+threadDict: Dict[int, LogThread] = {}
+
 @bot.event
 async def on_ready():
     print("")
@@ -45,7 +45,7 @@ async def on_ready():
 
 @bot.event
 async def on_voice_state_update(member : discord.Member, before : discord.VoiceState, after : discord.VoiceState):
-    now = datetime.datetime.now()
+    now = datetime.now()
     pretty_time = now.strftime("%Y-%m-%d %H:%M:%S")
 
     # 특정 텍스트 채널 ID로 설정합니다.
@@ -98,7 +98,7 @@ async def on_voice_state_update(member : discord.Member, before : discord.VoiceS
 
 @bot.event
 async def on_guild_channel_create(channel):
-    now = datetime.datetime.now()
+    now = datetime.now()
     pretty_time = now.strftime("%Y-%m-%d %H:%M:%S")
     
 @bot.event

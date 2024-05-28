@@ -1,12 +1,14 @@
 
+from typing import List
 import discord
 from discord import app_commands
 from discord.ext import commands
 import datetime
+from constants import Colours
 
 class ChannelMember:
     def __init__(self, user: discord.user):
-        self.user:discord.user = user
+        self.user:discord.Member = user
         self.joined:datetime = datetime.datetime.now()
         self.outed:datetime = None
         self.last_message = None
@@ -31,11 +33,11 @@ class ChannelMember:
     
 CATEGORY_BLACKLIST = [1139375856989511742]
 CHANNEL_BLACKLIST = ['✔ㅣ채널생성']
-    
+   
 class LogThread: 
     def __init__(self, thread: discord.Thread, voice_channel:discord.VoiceChannel):
         self.thread: discord.Thread = thread
-        self.members = []
+        self.members: List[ChannelMember] = []
         self.joined = datetime.datetime.now()
         self.voice_channel:discord.VoiceChannel = voice_channel
         self.last_message = None
@@ -72,14 +74,18 @@ class LogThread:
     async def change_title(self, title: str):
         await self.thread.edit(name=title)
         
-    async def enter_member(self, user: discord.user):
+    async def enter_member(self, user: discord.Member):
         if self.get_member(user) is None:            
             self.members.append(ChannelMember(user))
         self.get_member(user).joined = datetime.datetime.now()
-            
-        await self.send(f'[Bot]{user.display_name}님이 {self.voice_channel.name} 채널에 들어왔습니다!')
         
-    async def leave_member(self, user: discord.user):
+        description = f'**{user.display_name}**님이 **{self.voice_channel.name}** 채널에 들어왔습니다'
+        embed = discord.Embed(title="방입장", description=description, color=Colours.soft_green)
+        await self.thread.send(embed=embed)
+            
+        #await self.send(f'{user.display_name}님이 {self.voice_channel.name} 채널에 들어왔습니다!')
+        
+    async def leave_member(self, user: discord.Member):
         if self.get_member(user) is None:
             return
         
@@ -87,31 +93,36 @@ class LogThread:
         total_hours = round(period.days * 24 + period.seconds / 3600, 2) #소수점 이하 2자리까지 반올림
         
         #self.members.remove(self.get_member(user))
-        await self.send(f'[Bot]{user.display_name}님이 {self.voice_channel.name} 채널에서 나갔습니다!')
-        await self.send(f'[Bot]{user.display_name}님이 {total_hours}시간동안 채널에 머물렀습니다!')
+
+        description = f'**{user.nick}**님이 **{self.voice_channel.name}** 채널에서 나갔습니다\n**{user.nick}**님이 **{total_hours}**시간동안 채널에 머물렀습니다'
+        embed = discord.Embed(title="방퇴장", description=description, color=Colours.soft_red)
+        await self.thread.send(embed=embed)
+        #await self.send(f'{user.display_name}님이 {self.voice_channel.name} 채널에서 나갔습니다!')
+        #await self.send(f'{user.display_name}님이 {total_hours}시간동안 채널에 머물렀습니다!')
         
     def get_member(self, user: discord.user) -> ChannelMember:
         for member in self.members:
             if member.user == user:
                 return member
-        return None
+        return None    
     
     async def delete(self):
         self.outed = datetime.datetime.now()
-        await self.send(f'[Bot] {self.voice_channel.name} 채널이 삭제되었습니다!')
+        description = f'**{self.voice_channel.name}** 채널이 삭제되었습니다'
+        embed = discord.Embed(title="방삭제", description=description, color=Colours.yellow)
+        await self.thread.send(embed=embed)
+        #await self.send(f'{self.voice_channel.name} 채널이 삭제되었습니다!')
         period = self.outed - self.joined
-        total_hours = round(period.days * 24 + period.seconds / 3600, 2) #소수점 이하 2자리까지 반올림
+        total_hours = round(period.days * 24 + period.seconds / 3600, 2) #소수점 이하 2자리까지 반올림        
+        edit_message = f'방이름: {self.voice_channel.name}\n생성자: {self.create_member.nick}\n방생성시간: {self.joined.strftime(self.DATETIME_FORMAT)}\n방삭제시간: {self.outed.strftime(self.DATETIME_FORMAT)}\n방생존시간: {total_hours} \n\n### 방에 머문 멤버 목록\n'
         
-        edit_message = f'```방이름: {self.voice_channel.name}\n - 생성자: {self.create_member.display_name}\n - 방생성시간: {self.joined.strftime(self.DATETIME_FORMAT)}\n - 방삭제시간: {self.outed.strftime(self.DATETIME_FORMAT)}\n - 방생존시간: {total_hours} \n\n - 방에 머문 멤버 목록\n'
         for member in self.members:
             period = member.period
             total_hours = round(period.days * 24 + period.seconds / 3600, 2) #소수점 이하 2자리까지 반올림
-            edit_message += f'{member.user.display_name} : {total_hours}시간\n'
-        edit_message += '```'
-        await self.send(edit_message)
+            edit_message += f'{member.user.nick}: {total_hours}시간\n'
+        
+        embed = discord.Embed(title="방생성정보", description=edit_message, color=Colours.white)
+        await self.thread.send(embed = embed)
+        #await self.send(edit_message)
         #await self.thread.edit(name=f'{self.voice_channel.name}',)
-
-    
-    def __del__(self):
-        self.delete()
 
