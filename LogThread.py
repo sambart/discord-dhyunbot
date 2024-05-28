@@ -15,7 +15,7 @@ class ChannelMember:
     
     def cal_period(self) -> datetime.timedelta:
         self.outed = datetime.datetime.now()
-        self.period = self.outed - self.joined
+        self.period += self.outed - self.joined
         return self.period
 
 
