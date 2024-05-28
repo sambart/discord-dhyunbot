@@ -64,7 +64,7 @@ class LogThread:
             return None
         if(voice_channel.name in CHANNEL_BLACKLIST):
             return None
-        sThread = (await noti_channel.create_thread(name=f"{voice_channel.name}", content=f'방생성 {member.display_name} [{datetime.datetime.now()}]')).thread
+        sThread = (await noti_channel.create_thread(name=f"{voice_channel.name}", content=f'방생성 {member.nick} [{datetime.datetime.now()}]')).thread
         lThread = LogThread(sThread, voice_channel)
         await lThread.enter_member(member)
         lThread.joined = datetime.datetime.now()
@@ -79,7 +79,7 @@ class LogThread:
             self.members.append(ChannelMember(user))
         self.get_member(user).joined = datetime.datetime.now()
         
-        description = f'**{user.display_name}**님이 **{self.voice_channel.name}** 채널에 들어왔습니다'
+        description = f'**{user.nick}**님이 **{self.voice_channel.name}** 채널에 들어왔습니다'
         embed = discord.Embed(title="방입장", description=description, color=Colours.soft_green)
         await self.thread.send(embed=embed)
             
