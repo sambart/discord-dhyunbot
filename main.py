@@ -134,15 +134,13 @@ async def on_guild_channel_delete(channel):
 #해당 채널에서 리엑션을 했을시 관전자 롤 부여
 @bot.event
 async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
-    bot.add_listener(on)
+    #bot.add_listener(on)
     print(payload)
     channel = bot.get_channel(1140192448056922152)
-    role = discord.utils.get(payload.member.guild.roles, name="관전자")
-    #member = payload.member
-    guild = bot.get_guild(payload.guild_id)
-    member: discord.Member = payload.member
-    if payload.channel_id != channel.id:
+    member: discord.Member | None = payload.member
+    if channel is not None and payload.channel_id != channel.id:
         return
+       
     if payload.emoji.name == "✅":  
         if " ㄱ" not in member.nick:  
             newNick = member.nick + " ㄱ"
@@ -155,12 +153,10 @@ async def on_raw_reaction_remove(payload: discord.RawReactionActionEvent):
     guild = bot.get_guild(payload.guild_id)
     member = discord.utils.get(guild.members, id=payload.user_id)
     channel = bot.get_channel(1140192448056922152)
-    role = discord.utils.get(member.guild.roles, name="관전자")
 
     if payload.channel_id != channel.id:
         return
-    if payload.emoji.name == "✅":  
-        print(role)
+    if payload.emoji.name == "✅":
         #if member.nick in " ㄱ":            
         newNick = member.nick.rstrip(" ㄱ")
         await member.edit(nick = newNick)
