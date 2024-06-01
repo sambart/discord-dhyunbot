@@ -47,10 +47,6 @@ class Bot(BotBase):
                     raise
                 await asyncio.sleep(constants.URLs.connect_cooldown)
 
-    async def setup_hook(self) -> None:
-        """Default async initialisation method for discord.py."""
-        await super().setup_hook()
-        await self.load_extensions(exts)
 
     async def on_error(self, event: str, *args, **kwargs) -> None:
         """Log errors raised in event listeners rather than printing them to stderr."""
