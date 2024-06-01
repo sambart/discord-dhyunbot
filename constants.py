@@ -1,3 +1,6 @@
+FILE_LOGS = True
+DEBUG_MODE = True
+
 class Colours:
     """Colour codes, mostly used to set discord.Embed colours."""
 
@@ -11,3 +14,4 @@ class Colours:
     soft_red: int = 0xcd6d6d
     white: int = 0xfffffe
     yellow: int = 0xffd241
+
