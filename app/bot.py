@@ -3,63 +3,120 @@ import contextlib
 from sys import exception
 
 import aiohttp
-from discord.errors import Forbidden
 from pydis_core import BotBase
 from pydis_core.utils.error_handling import handle_forbidden_from_block
 
+from discord.errors import Forbidden
+from discord.ext import commands as dpy_commands
 from bot import constants, exts
 import logging
+from typing import (
+    Optional,
+)
+import discord.ext.commands as commands
+import discord
+import inspect
+
 
 log = logging.getLogger('bot')
 
 
-class StartupError(Exception):
-    """Exception class for startup errors."""
-
-    def __init__(self, base: Exception):
-        super().__init__()
-        self.exception = base
 
 
-class Bot(BotBase):
-    """A subclass of `pydis_core.BotBase` that implements bot-specific functions."""
+class Bot(dpy_commands.bot.AutoShardedBot):
+    def __init__(self):
+        super().__init__(command_prefix=constants.Bot.prefix, case_insensitive=True)
+        
+        self._token = None
+        self._session = None
+        
+    async def is_admin(self, member: discord.Member) -> bool:
+        """Checks if a member is an admin of their guild."""
+        try:
+            for snowflake in await self._config.guild(member.guild).admin_role():
+                if member.get_role(snowflake):
+                    return True
+        except AttributeError:  # someone passed a webhook to this
+            pass
+        return False
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    async def add_cog(
+        self,
+        cog: commands.Cog,
+        /,
+        *,
+        override: bool = False,
+        guild: Optional[discord.abc.Snowflake] = discord.utils.MISSING,
+        guilds: List[discord.abc.Snowflake] = discord.utils.MISSING,
+    ) -> None:
+        if not isinstance(cog, commands.Cog):
+            raise RuntimeError(
+                f"The {cog.__class__.__name__} cog in the {cog.__module__} package does "
+                f"not inherit from the commands.Cog base class. The cog author must update "
+                f"the cog to adhere to this requirement."
+            )
+        cog_name = cog.__cog_name__
+        if cog_name in self.cogs:
+            if not override:
+                raise discord.ClientException(f"Cog named {cog_name!r} already loaded")
+            await self.remove_cog(cog_name, guild=guild, guilds=guilds)
 
-    async def load_extension(self, name: str, *args, **kwargs) -> None:
-        """Extend D.py's load_extension function to also record sentry performance stats."""
-        await super().load_extension(name, *args, **kwargs)
+        if not hasattr(cog, "requires"):
+            commands.Cog.__init__(cog)
 
-    async def ping_services(self) -> None:
-        """A helper to make sure all the services the bot relies on are available on startup."""
-        # Connect Site/API
-        attempts = 0
-        while True:
-            try:
-                log.info(f"Attempting site connection: {attempts + 1}/{constants.URLs.connect_max_retries}")
-                await self.api_client.get("healthcheck")
-                break
+        added_hooks = []
 
-            except (aiohttp.ClientConnectorError, aiohttp.ServerDisconnectedError):
-                attempts += 1
-                if attempts == constants.URLs.connect_max_retries:
-                    raise
-                await asyncio.sleep(constants.URLs.connect_cooldown)
+        try:
+            for cls in inspect.getmro(cog.__class__):
+                try:
+                    hook = getattr(cog, f"_{cls.__name__}__permissions_hook")
+                except AttributeError:
+                    pass
+                else:
+                    self.add_permissions_hook(hook)
+                    added_hooks.append(hook)
 
+            await super().add_cog(cog, guild=guild, guilds=guilds)
+            self.dispatch("cog_add", cog)
+            if "permissions" not in self.extensions:
+                cog.requires.ready_event.set()
+        except Exception:
+            for hook in added_hooks:
+                try:
+                    self.remove_permissions_hook(hook)
+                except Exception:
+                    # This shouldn't be possible
+                    log.exception(
+                        "A hook got extremely screwed up, "
+                        "and could not be removed properly during another error in cog load."
+                    )
+            del cog
+            raise
 
-    async def on_error(self, event: str, *args, **kwargs) -> None:
-        """Log errors raised in event listeners rather than printing them to stderr."""
-        e_val = exception()
+    def add_command(self, command: commands.Command, /) -> None:
+        if not isinstance(command, commands.Command):
+            raise RuntimeError("Commands must be instances of `redbot.core.commands.Command`")
 
-        if isinstance(e_val, Forbidden):
-            message = args[0] if event == "on_message" else args[1] if event == "on_message_edit" else None
+        super().add_command(command)
 
-            with contextlib.suppress(Forbidden):
-                # Attempt to handle the error. This reraises the error if's not due to a block,
-                # in which case the error is suppressed and handled normally. Otherwise, it was
-                # handled so return.
-                await handle_forbidden_from_block(e_val, message)
-                return
+        permissions_not_loaded = "permissions" not in self.extensions
+        self.dispatch("command_add", command)
+        if permissions_not_loaded:
+            command.requires.ready_event.set()
+        if isinstance(command, commands.Group):
+            for subcommand in command.walk_commands():
+                self.dispatch("command_add", subcommand)
+                if permissions_not_loaded:
+                    subcommand.requires.ready_event.set()
+        if isinstance(command, (commands.HybridCommand, commands.HybridGroup)):
+            command.app_command.extras = command.extras
 
-        self.stats.incr(f"errors.event.{event}")
+    def remove_command(self, name: str, /) -> Optional[commands.Command]:
+        command = super().remove_command(name)
+        if command is None:
+            return None
+        command.requires.reset()
+        if isinstance(command, commands.Group):
+            for subcommand in command.walk_commands():
+                subcommand.requires.reset()
+        return command
