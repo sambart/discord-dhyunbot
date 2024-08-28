@@ -1,0 +1,88 @@
+1;wink12;02 여 워니
+2;cl_ou_d_0;04 여 구름 ☁
+3;ji._.h_161;96 여 홍남
+4;nightbot2338;00 남 페르
+5;.eunmi.;95 여 은미 💕
+6;s_titc_h;# 98 남 스티치
+7;aa6179;# 96 남 용남 🍭
+8;mingu.9;98 남 구구 🐓
+9;w_102;97 여 우챠
+10;hungry._.69;02 여 고파
+11;s2eony;00 여 용복 부계 ㄱ
+12;jibin_1122;02 여 지빈
+13;sym2998_;04 남 사람
+14;v0134;02 여 쥬쥬 부계
+15;seonghaxx_;95 남 승하기
+16;yuharu02;02 남 하루
+17;jaepil8440;94 남 궁민 ㄱ
+18;duchil;99 남  곽두칠
+19;qw12;96 남 용근 🥨
+20;baesangyeol.;92 남 배
+21;hyohyo0909;# 97 여 효효 ㄱ
+22;jangkong_sick;97 여 장콩식
+23;mingeoni;00 남 민건
+24;yoizuki54;04 남 요이즈키 ㄱ
+25;chocodor2_;05 남 마이키
+26;kokoya.;01 남 코야
+27;won_ee;02 남 원이
+28;sulb2;01 남 무지
+29;milk92;# 92 남 우유 🥛
+30;te_0r;02 남 테오
+31;gimjaemin2426;00 남 재민
+32;girin_;# 96 남 기린 🦒
+33;deho0034;99 남 고리
+34;insang1234;00 남 영식 ㄱ
+35;sangbob;98 남 우비 ㄱ
+36;wm_yumyum;03 남 욤욤
+37;rio._;02 여 쥬쥬
+38;ken_1225;00 남 백켄 부계 ㄱ
+39;byuul20;00 여 벼리ㄱ
+40;zerosum1623;00 남 제로섬
+41;sso1021;98 여 쏘야
+42;dms_0274;94 여 온도니
+43;jua_;# 03 여 주아 🐈 ㄱ
+44;hello1004;94 여  지유
+45;minouk_;# 98 남 늘온
+46;milk9206;# 92 남 우유 ㄱ
+47;sangu5168;97 남 배찌
+48;gwi_yo_mi._.;00 남 땁곰 🥜ㄱ
+49;gigimingood;01 여 빵민
+50;gseongjun1;98 남 감자
+51;babba2_;93 남 밥바
+52;whddns1321;02 남 종운
+53;weoni6808;02 남 원이 부계
+54;nitkyo;95 남 닛쿄
+55;mok_a_;03 남 뫅뫅 ㄱ
+56;suk9_;96 남 담지
+57;luka24_;00 남 철이 ㄱ
+58;an_cho.vy;97 남 은호
+59;jotitch_78890;스티치 부계 (서버 테스트용)
+60;jiho5783;96 남 지호 ㄱ
+61;topa4660;00 남 토파 ㄱ
+62;000518;00 남 저지
+63;wee__d;00 남 용구
+64;_kcm1029;00 남 눈꽃
+65;dbdbdb114;02 남 마샬
+66;neulon5515;98 남 늘온 부계
+67;kreen_il;02 여 해피 부계
+68;whatever_1029;97 남 아무 ㄱ
+69;happy_li;02 여 해피
+70;maehonjeong;99 남 매혼정
+71;jinstone03;03 남 진석
+72;senssop;00 남 센쏩
+73;ppqpqp;95 남 팝팝
+74;kim_do_hyong;04 남 초봉좌
+75;hj211;04 남 한현준
+76;odayeong;98 여 돼지
+77;soomni_i;98 여 숨니
+78;.ssim;98 남 심심
+79;cutiesexy_;04 여 유니
+80;hwan07397;04 남 환
+81;pang_kwon;03 남 팽권
+82;ken_1225_;00 남 백켄 ㄱ
+83;shindonghyun3404;90 남 디현 부계 ㄱ
+84;hyeongchan000;01 남 씀씀
+85;shindonghyun_;# 90 남 디현  🍢
+86;.idonghyeon;95 남 동동 ㄱ
+87;heechan_03;03 남 희찬
+88;shindonghyun_;None

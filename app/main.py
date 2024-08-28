@@ -103,7 +103,7 @@ async def say(ctx):
         for member in guild.members:
             i +=1
             print({member})
-            now = datetime.datetime.now() + datetime.timedelta(days=30)
+            now = datetime.now() + datetime.timedelta(days=30)
             print({})
             print({member.joined_at})
             print({member.joined_at.strftime("%b %d, %Y, %T")})

@@ -193,7 +193,7 @@ async def say(ctx):
     for member in ctx.guild.members:
         i +=1
         #print({member})
-        join_days = datetime.datetime.now().astimezone() - member.joined_at
+        join_days = datetime.now().astimezone() - member.joined_at
         if member.bot:
             continue
         #롤 지우기
@@ -297,7 +297,7 @@ async def say(ctx):
         for member in guild.members:
             if member.bot:
                 continue
-            join_days = datetime.datetime.now().astimezone() - member.joined_at
+            join_days = datetime.now().astimezone() - member.joined_at
             if join_days.days < 35:
                 continue
             i +=1
